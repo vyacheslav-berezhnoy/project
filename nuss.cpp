@@ -136,8 +136,8 @@ int main(int argc, char* argv[])
         Ra21 = Ra1;
         //Ra = 2.0 * g * (x[i][j] - table_in_begin_parametr[k][6]) * pow(0.022, 3) / (x[i][j] + table_in_begin_parametr[k][6] + 2.0 * T0) / (nu[c] + (nu[c + 1] - nu[c]) * d) / (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d); // nu - вязкость    
         //Ra2 = 2.0 * g * (x[i][j] - table_in_begin_parametr[k][6]) * pow(0.022, 3) / (x[i][j] + table_in_begin_parametr[k][6] + 2.0 * T0) / (nu[c1] + (nu[c1 + 1] - nu[c1]) * d1) / (a_gas[c1] + (a_gas[c1 + 1] - a_gas[c1]) * d1);
-        Qck1 = 0.508 * (lambda[c] + (lambda[c + 1] - lambda[c]) * d) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra1 * Pr / (0.952 + Pr)), 0.25) / 0.022;
-        Qck2 = 0.508 * (lambda[c1] + (lambda[c1 + 1] - lambda[c1]) * d1) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra21 * Pr / (0.952 + Pr)), 0.25) / 0.022;
+        Qck1 = 0.508 * (lambda[c] + (lambda[c + 1] - lambda[c]) * d) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra1 * Pr / (0.952 + Pr)), 0.25) / har_len;
+        Qck2 = 0.508 * (lambda[c1] + (lambda[c1 + 1] - lambda[c1]) * d1) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra21 * Pr / (0.952 + Pr)), 0.25) / har_len;
         Qw1 = Qel1 - Qizl1 - Qck1 - Qck2;
         std::cout << Qw1<<std::endl;
         if (Qw1 < 0) {
