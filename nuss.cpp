@@ -1,155 +1,304 @@
-#include <iostream>
-#include <fstream>
-#include <cstdio>
-#include <cstdlib>
-#include <vector>
-#include <sstream>
+#pragma once
 #include <string>
+//#include <msclr\marshal_cppstd.h>
+#include "C:\Users\Asus\source\repos\GUI1\bmtExtractor.h"
+#include "C:\Users\Asus\source\repos\GUI1\Header1.h"
+
+namespace GUI1 {
+
+	using namespace System;
+	using namespace System::ComponentModel;
+	using namespace System::Collections;
+	using namespace System::Windows::Forms;
+	using namespace System::Data;
+	using namespace System::Drawing;
+	using namespace System::Collections::Generic;
+	using namespace System::Text;
+	using namespace System::Threading::Tasks;
+	using namespace System::Windows::Forms;
+
+	/// <summary>
+	/// Сводка для MyForm
+	/// </summary>
+	public ref class MyForm : public System::Windows::Forms::Form
+	{
+	public:
+		Rectangle^ Rect;
+		Rectangle newRect;
+		Point LocXY;
+		Point LocX1Y1;
+		Pen^ selPen;
+		Bitmap^ bmp;
+		Bitmap^ Fl1Bmp;
+		Bitmap^ cropImg;
+		Graphics^ g;
+		Point^ poin;
+		OpenFileDialog^ fl1;
+
+	private: System::Windows::Forms::PictureBox^ pictureBox2;
 
 
-int main(int argc, char* argv[])
-{
-    int x, n, m;
-    float y;
-    
-    std::stringstream str(argv[1]);
-    std::stringstream str1(argv[2]);
-    str >> m;
-    str1 >> n;
-    std::cout << m << std::endl;
-    std::cout << n << std::endl;
 
-    bool flag = false; // чтобы считать нужную информацию
-    std::vector<float>arr;
-
-    double lambda[11];
-    lambda[0] = 0.0244;
-    lambda[1] = 0.0251;
-    lambda[2] = 0.0259;
-    lambda[3] = 0.0267;
-    lambda[4] = 0.0276;
-    lambda[5] = 0.0283;
-    lambda[6] = 0.029;
-    lambda[7] = 0.0296;
-    lambda[8] = 0.0305;
-    lambda[9] = 0.0313;
-    lambda[10] = 0.0321;
-
-    double nu[11];
-    nu[0] = 13.28 * pow(10, -6);
-    nu[1] = 14.16 * pow(10, -6);
-    nu[2] = 15.06 * pow(10, -6);
-    nu[3] = 16 * pow(10, -6);
-    nu[4] = 16.96 * pow(10, -6);
-    nu[5] = 17.95 * pow(10, -6);
-    nu[6] = 18.97 * pow(10, -6);
-    nu[7] = 20.02 * pow(10, -6);
-    nu[8] = 21.09 * pow(10, -6);
-    nu[9] = 22.1 * pow(10, -6);
-    nu[10] = 23.13 * pow(10, -6);
-
-    double a_gas[11];
-    a_gas[0] = 18.8 * pow(10, -6); //0
-    a_gas[1] = 20 * pow(10, -6); //10 
-    a_gas[2] = 21.4 * pow(10, -6);
-    a_gas[3] = 22.9 * pow(10, -6);
-    a_gas[4] = 24.3 * pow(10, -6);
-    a_gas[5] = 25.7 * pow(10, -6);
-    a_gas[6] = 27.2 * pow(10, -6);
-    a_gas[7] = 28.6 * pow(10, -6);
-    a_gas[8] = 30.2 * pow(10, -6);
-    a_gas[9] = 31.9 * pow(10, -6);
-    a_gas[10] = 33.6 * pow(10, -6);
-
-    double betta[11];
-    betta[0] = 0.36 * pow(10, -2); //0
-    betta[1] = 0.35 * pow(10, -2); //10 
-    betta[2] = 0.34 * pow(10, -2);
-    betta[3] = 0.33 * pow(10, -2);
-    betta[4] = 0.32 * pow(10, -2);
-    betta[5] = 0.31 * pow(10, -2);
-    betta[6] = 0.3 * pow(10, -2);
-    betta[7] = 0.29 * pow(10, -2);
-    betta[8] = 0.28 * pow(10, -2);
-    betta[9] = 0.27 * pow(10, -2);
-    betta[10] = 0.26 * pow(10, -2);
-    int width_plate=m, lenght_plate=n;
-    int k = 0,c,c1;
-    double p, q,d,d1,T1, Qizl1, Qel1, Ra1,har_len = 0.022, Ra21, Qck1, Qck2, Qw1, Nu1, diameter=1, Alpha1;
-    double g = 9.8;
-    double T0 = 273.15;
-    double sigma = 5.67 * pow(10.0, -8);
-    double epsilon_material = 0.19;
-    double epsilon_kraska = 0.96;
-    double c_p = 1005;
-    double Pr = 0.7;
-    double viscosity = 0.0259;
-    double** table_in_begin_parametr = (double**)(malloc(sizeof(double*)));
-    for (int i = 0; i < 1; i++)//initializing array
-    {
-        table_in_begin_parametr[i] = (double*)malloc(15 * sizeof(double));
-        for (int j = 0; j < 15; j++)
-        {
-            table_in_begin_parametr[i][j] = j;
-        }
-    }
-    std::ifstream in("IR004872.bmt", std::ios::binary);
-    while (in.read((char*)&x, sizeof(int)))
-    {
-        if (x == m)
-        {
-            in.read((char*)&x, sizeof(int));
-            if (x == n)
-            {
-                if (flag)
-                {
-                    for (int i = 0;i < n * m;i++)
-                    {
-
-                        in.read((char*)&y, sizeof(float));
-                        arr.push_back(y);
-                    }
-                    break;
-                }
-                flag = true;
-            }
-        }
-
-    }
-    in.close();
-    for (int i = 0;i < 1;i++)
-    {
-        p = (i - table_in_begin_parametr[k][10]) * table_in_begin_parametr[k][14];
-
-        /*for (int j = 0;j < 1;j++)
-        {
-            q = (j - table_in_begin_parametr[k][11]) * table_in_begin_parametr[k][14];
-        }*/
-        c = int((arr[i] - 1.0 / 3.0 * table_in_begin_parametr[k][9]) / 10.0); // коэффициенты меняются каждые десять градусов
-        d = (arr[i] - 1.0 / 3.0 * table_in_begin_parametr[k][9]) / 10.0 - c;
-        T1 = arr[i];
-        Qizl1 = sigma * epsilon_kraska * (pow((T0 + arr[i]), 4) - pow((T0 + table_in_begin_parametr[k][9]), 4)) + sigma * epsilon_material * (pow((T0 + arr[i]), 4) - pow((T0 + table_in_begin_parametr[k][9]), 4));
-        c1 = int((arr[i] - 1.0 / 3.0 * table_in_begin_parametr[k][9]) / 10.0);
-        d1 = (arr[i] - 1.0 / 3.0 * table_in_begin_parametr[k][9]) / 10.0 - c;
-        Qel1 = table_in_begin_parametr[k][7] / (width_plate * lenght_plate); // not weight!!1 
-        Ra1 = (betta[c] + (betta[c + 1] - betta[c]) * d) * g * Qel1 * pow(har_len, 4) / (lambda[c] + (lambda[c + 1] - lambda[c]) * d) / (nu[c] + (nu[c + 1] - nu[c]) * d) / (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d); // вместо 0.022 задавать характеристическую длину как параметр
-        Ra21 = Ra1;
-        //Ra = 2.0 * g * (x[i][j] - table_in_begin_parametr[k][6]) * pow(0.022, 3) / (x[i][j] + table_in_begin_parametr[k][6] + 2.0 * T0) / (nu[c] + (nu[c + 1] - nu[c]) * d) / (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d); // nu - вязкость    
-        //Ra2 = 2.0 * g * (x[i][j] - table_in_begin_parametr[k][6]) * pow(0.022, 3) / (x[i][j] + table_in_begin_parametr[k][6] + 2.0 * T0) / (nu[c1] + (nu[c1 + 1] - nu[c1]) * d1) / (a_gas[c1] + (a_gas[c1 + 1] - a_gas[c1]) * d1);
-        Qck1 = 0.508 * (lambda[c] + (lambda[c + 1] - lambda[c]) * d) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra1 * Pr / (0.952 + Pr)), 0.25) / har_len;
-        Qck2 = 0.508 * (lambda[c1] + (lambda[c1 + 1] - lambda[c1]) * d1) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra21 * Pr / (0.952 + Pr)), 0.25) / har_len;
-        Qw1 = Qel1 - Qizl1 - Qck1 - Qck2;
-        std::cout << Qw1<<std::endl;
-        if (Qw1 < 0) {
-            Qw1 = 0;
-        }
-        Nu1 = diameter * (Qw1) / (T1 - table_in_begin_parametr[k][9]) / (lambda[c] + (lambda[c + 1] - lambda[c]) * d);
-        Alpha1 = Qw1 / (T1 - table_in_begin_parametr[k][6]);
+	private: System::Windows::Forms::Label^ label2;
+	private: System::Windows::Forms::Label^ label3;
+	private: System::Windows::Forms::Label^ label1;
 
 
-        k++;
-    }
-    for (int i = 0;i < 10;i++)
-        std::cout << arr[i] << std::endl;
-    return 0;
+	public:
+		///selPen.Color=
+		bool IsMouseDown = false;
+
+		MyForm(void)
+		{
+			InitializeComponent();
+			//
+			//TODO: добавьте код конструктора
+			//
+		}
+		void MarshalString(String^ s, std::string& os) {
+			using namespace Runtime::InteropServices;
+			const char* chars =
+				(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+			os = chars;
+			Marshal::FreeHGlobal(IntPtr((void*)chars));
+		}
+		std::string* str;
+	protected:
+		/// <summary>
+		/// Освободить все используемые ресурсы.
+		/// </summary>
+		~MyForm()
+		{
+			if (components)
+			{
+				delete components;
+			}
+		}
+	private: System::Windows::Forms::Button^ button1;
+	private: System::Windows::Forms::Button^ button2;
+	private: System::Windows::Forms::PictureBox^ pictureBox1;
+	protected:
+
+	private:
+		/// <summary>
+		/// Обязательная переменная конструктора.
+		/// </summary>
+		System::ComponentModel::Container^ components;
+
+#pragma region Windows Form Designer generated code
+		/// <summary>
+		/// Требуемый метод для поддержки конструктора — не изменяйте 
+		/// содержимое этого метода с помощью редактора кода.
+		/// </summary>
+		void InitializeComponent(void)
+		{
+			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+			this->pictureBox2 = (gcnew System::Windows::Forms::PictureBox());
+			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->BeginInit();
+			this->SuspendLayout();
+			// 
+			// button1
+			// 
+			this->button1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->button1->Location = System::Drawing::Point(31, 14);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(194, 80);
+			this->button1->TabIndex = 0;
+			this->button1->Text = L"SelectImg";
+			this->button1->UseVisualStyleBackColor = true;
+			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
+			// 
+			// button2
+			// 
+			this->button2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->button2->Location = System::Drawing::Point(285, 14);
+			this->button2->Name = L"button2";
+			this->button2->Size = System::Drawing::Size(194, 80);
+			this->button2->TabIndex = 1;
+			this->button2->Text = L"ChooseFile";
+			this->button2->UseVisualStyleBackColor = true;
+			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
+			// 
+			// pictureBox1
+			// 
+			this->pictureBox1->Location = System::Drawing::Point(31, 174);
+			this->pictureBox1->Name = L"pictureBox1";
+			this->pictureBox1->Size = System::Drawing::Size(768, 597);
+			this->pictureBox1->SizeMode = System::Windows::Forms::PictureBoxSizeMode::AutoSize;
+			this->pictureBox1->TabIndex = 2;
+			this->pictureBox1->TabStop = false;
+			this->pictureBox1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::pictureBox1_Paint);
+			this->pictureBox1->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::pictureBox1_MouseDown);
+			this->pictureBox1->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::pictureBox1_MouseMove);
+			this->pictureBox1->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &MyForm::pictureBox1_MouseUp);
+			// 
+			// pictureBox2
+			// 
+			this->pictureBox2->Location = System::Drawing::Point(1082, 174);
+			this->pictureBox2->Name = L"pictureBox2";
+			this->pictureBox2->Size = System::Drawing::Size(490, 597);
+			this->pictureBox2->SizeMode = System::Windows::Forms::PictureBoxSizeMode::AutoSize;
+			this->pictureBox2->TabIndex = 3;
+			this->pictureBox2->TabStop = false;
+			this->pictureBox2->Click += gcnew System::EventHandler(this, &MyForm::pictureBox2_Click);
+			// 
+			// label2
+			// 
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label2->Location = System::Drawing::Point(840, 14);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(177, 80);
+			this->label2->TabIndex = 7;
+			this->label2->Text = L"size";
+			this->label2->Click += gcnew System::EventHandler(this, &MyForm::label2_Click);
+			// 
+			// label3
+			// 
+			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label3->Location = System::Drawing::Point(1098, 14);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(177, 80);
+			this->label3->TabIndex = 9;
+			this->label3->Text = L"cords";
+			this->label3->Click += gcnew System::EventHandler(this, &MyForm::label3_Click);
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->Location = System::Drawing::Point(29, 122);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(24, 16);
+			this->label1->TabIndex = 10;
+			this->label1->Text = L"Nu";
+			this->label1->Click += gcnew System::EventHandler(this, &MyForm::label1_Click);
+			// 
+			// MyForm
+			// 
+			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->ClientSize = System::Drawing::Size(1796, 793);
+			this->Controls->Add(this->label1);
+			this->Controls->Add(this->label3);
+			this->Controls->Add(this->label2);
+			this->Controls->Add(this->pictureBox2);
+			this->Controls->Add(this->pictureBox1);
+			this->Controls->Add(this->button2);
+			this->Controls->Add(this->button1);
+			this->Name = L"MyForm";
+			this->Text = L"MyForm";
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->EndInit();
+			this->ResumeLayout(false);
+			this->PerformLayout();
+
+		}
+#pragma endregion
+	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+		OpenFileDialog^ ofd = gcnew OpenFileDialog();
+		   if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+		   {
+			   pictureBox1->Image = Image::FromFile(ofd->FileName);
+			   pictureBox1->SizeMode = PictureBoxSizeMode::StretchImage;
+		   }
+	}
+	private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
+		fl1 = gcnew OpenFileDialog();
+		std::string a;
+		
+		//fl1->Filter = "Text files (*.bmt)|*.bmt";
+		if (fl1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+		{
+			
+			MarshalString(fl1->FileName,a );
+			Bmtextractor(a);
+			Fl1Bmp = gcnew Bitmap("C:\\Users\\Asus\\source\\repos\\GUI1\\GUI1\\image.bmp");
+			pictureBox1->Image = Fl1Bmp;
+			
+			//label2->Text = pictureBox1->Width.ToString()+" " + pictureBox1->Height.ToString();
+			//pictureBox1->SizeMode = PictureBoxSizeMode::StretchImage;
+		}
+
+	}
+private: System::Void pictureBox1_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	IsMouseDown = true;
+	LocXY = e->Location;
+}
+private: System::Void pictureBox1_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	if (IsMouseDown == true)
+	{
+		LocX1Y1 = e->Location;
+		Refresh();
+	}
+}
+private: System::Void pictureBox1_MouseUp(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	if (IsMouseDown == true)
+	{
+		
+		LocX1Y1 = e->Location;
+		IsMouseDown = false;
+		if (Rect != nullptr) {
+			poin = gcnew Point(0, 0);
+			bmp = gcnew Bitmap(pictureBox1->Image, pictureBox1->Width, pictureBox1->Height);
+			cropImg = gcnew Bitmap(Rect->Width, Rect->Height);
+			g = Graphics::FromImage(cropImg);
+			g->DrawImage(bmp,0,0,newRect,GraphicsUnit::Pixel);
+			pictureBox2->Image = cropImg;
+			label2->Text = "Width:"+Rect->Width.ToString() + "\nHeight:" + Rect->Height.ToString();
+			label3->Text = "X,Y:"+ LocXY.X.ToString() + "," + LocXY.Y.ToString()+"; X1Y1:"+ LocX1Y1.X.ToString() +"," + LocX1Y1.Y.ToString() +";";
+			
+		}
+		float Nunum;
+		std::string a;
+		MarshalString(fl1->FileName, a);
+		Bmtextractor(a);
+		Nunum = countNu(pictureBox1->Width, pictureBox1->Height, a, LocXY.X, LocXY.Y, LocX1Y1.X, LocX1Y1.Y);
+		label1->Text = Nunum.ToString();
+		
+	}
+}
+private: System::Void pictureBox1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
+	
+	selPen = gcnew Pen(Color::Red);
+	e->Graphics->DrawRectangle(selPen, GetRect());
+
+	
+}
+    Rectangle GetRect()
+	{
+		Rect = gcnew Rectangle();
+		Rect->X = Math::Min(LocXY.X, LocX1Y1.X);
+		newRect.X = Math::Min(LocXY.X, LocX1Y1.X);
+		Rect->Y = Math::Min(LocXY.Y, LocX1Y1.Y);
+		newRect.Y = Math::Min(LocXY.Y, LocX1Y1.Y);
+		Rect->Width = Math::Abs(LocXY.X- LocX1Y1.X);
+		newRect.Width = Math::Abs(LocXY.X - LocX1Y1.X);
+		Rect->Height = Math::Abs(LocXY.Y-LocX1Y1.Y);
+		newRect.Height = Math::Abs(LocXY.Y - LocX1Y1.Y);
+	
+		return *Rect;
+	}
+
+
+private: System::Void pictureBox2_Click(System::Object^ sender, System::EventArgs^ e) {
+}
+
+private: System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void label3_Click(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void textBox2_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
+}
+};
 }
