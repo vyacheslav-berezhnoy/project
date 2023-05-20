@@ -7,6 +7,8 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <fstream>
+#include <cstring>
 
 float countNu(int m, int n,std::string str, int x, int y, int x1, int y1)//передавать размер
 {
@@ -85,14 +87,57 @@ float countNu(int m, int n,std::string str, int x, int y, int x1, int y1)//пе�
     double c_p = 1005;
     double Pr = 0.7;
     double viscosity = 0.0259;
-    double** table_in_begin_parametr = (double**)(malloc(sizeof(double*)));
-    for (int i = 0; i < 1; i++)//initializing array
+    std::ofstream MyFile("filename.txt");
+    std::string word;
+    
+    
+    double** table_in_begin_parametr = new double* [1];
+    std::ifstream infile("C:\\Users\\Asus\\source\\repos\\GUI1\\GUI1\\Project\\table_in_c.txt");
+    std::string line;
+
+    
+    int j = 0;
+    char* tok = new char[13];
+    const int strlen = 50;
+    //double** table_in_begin_parametr = (double**)(malloc(sizeof(double*)));
+    for (int i = 0; i < 10; i++)//initializing array
     {
-        table_in_begin_parametr[i] = (double*)malloc(15 * sizeof(double));
-        for (int j = 0; j < 15; j++)
+        table_in_begin_parametr[i] = new double[15];
+        if (getline(infile, line))
         {
-            table_in_begin_parametr[i][j] = j;
+            //const int strlen = line.length() + 1;
+            char line1[strlen];
+            strcpy(line1, line.c_str());
+            tok = strtok(line1, " ");
+            while (tok) {
+                table_in_begin_parametr[i][0] = atof(tok);
+                tok = std::strtok(nullptr, " ");
+                table_in_begin_parametr[i][9] = atof(tok);
+                tok = std::strtok(nullptr, " ");
+                table_in_begin_parametr[i][4] = atof(tok);
+                tok = std::strtok(nullptr, " ");
+                
+                table_in_begin_parametr[i][7] = atof(tok);
+                tok = std::strtok(nullptr, " ");
+                table_in_begin_parametr[i][12] = atof(tok);
+                
+                tok = std::strtok(nullptr, " ");
+                table_in_begin_parametr[i][13] = atof(tok);
+
+                tok = std::strtok(nullptr, " ");
+                tok = std::strtok(nullptr, " ");
+                tok = std::strtok(nullptr, " ");
+                tok = std::strtok(nullptr, " ");
+                table_in_begin_parametr[i][11] = atof(tok);
+                tok = std::strtok(nullptr, " ");
+                table_in_begin_parametr[i][10] = atof(tok);
+            }
+
+            
+            
+
         }
+        
     }
     std::ifstream in(str, std::ios::binary);
     while (in.read((char*)&ch, sizeof(int)))
@@ -136,18 +181,24 @@ float countNu(int m, int n,std::string str, int x, int y, int x1, int y1)//пе�
             c1 = int((arr[i] - 1.0 / 3.0 * table_in_begin_parametr[k][9]) / 10.0);
             d1 = (arr[i] - 1.0 / 3.0 * table_in_begin_parametr[k][9]) / 10.0 - c;
             Qel1 = table_in_begin_parametr[k][7] / (width_plate * lenght_plate); // not weight!!1 
-            Ra1 = (betta[c] + (betta[c + 1] - betta[c]) * d) * g * Qel1 * pow(har_len, 4) / (lambda[c] + (lambda[c + 1] - lambda[c]) * d) / (nu[c] + (nu[c + 1] - nu[c]) * d) / (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d); // вместо 0.022 задавать характеристическую длину как параметр
+            //Ra1 = (betta[c] + (betta[c + 1] - betta[c]) * d) * g * Qel1 * pow(har_len, 4) / (lambda[c] + (lambda[c + 1] - lambda[c]) * d) / (nu[c] + (nu[c + 1] - nu[c]) * d) / (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d); // вместо 0.022 задавать характеристическую длину как параметр
+            Ra1 = (2 * g * (arr[i] - table_in_begin_parametr[k][6]) * pow(har_len, 3)) / ((arr[i] - table_in_begin_parametr[k][6]) * (nu[c] + (nu[c + 1] - nu[c]) * d) * (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d));
+            //Ra1 = (2*(betta[c] + (betta[c + 1] - betta[c]) * d) * g * Qel1 * pow(har_len, 4))/ ((arr[i] - table_in_begin_parametr[k][6]) * (nu[c] + (nu[c + 1] - nu[c]) * d) * (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d));
             Ra21 = Ra1;
             //Ra = 2.0 * g * (x[i][j] - table_in_begin_parametr[k][6]) * pow(0.022, 3) / (x[i][j] + table_in_begin_parametr[k][6] + 2.0 * T0) / (nu[c] + (nu[c + 1] - nu[c]) * d) / (a_gas[c] + (a_gas[c + 1] - a_gas[c]) * d); // nu - вязкость    
             //Ra2 = 2.0 * g * (x[i][j] - table_in_begin_parametr[k][6]) * pow(0.022, 3) / (x[i][j] + table_in_begin_parametr[k][6] + 2.0 * T0) / (nu[c1] + (nu[c1 + 1] - nu[c1]) * d1) / (a_gas[c1] + (a_gas[c1 + 1] - a_gas[c1]) * d1);
             Qck1 = 0.508 * (lambda[c] + (lambda[c + 1] - lambda[c]) * d) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra1 * Pr / (0.952 + Pr)), 0.25) / har_len;
             Qck2 = 0.508 * (lambda[c1] + (lambda[c1 + 1] - lambda[c1]) * d1) * (arr[i] - table_in_begin_parametr[k][9]) * pow((Ra21 * Pr / (0.952 + Pr)), 0.25) / har_len;
             Qw1 = Qel1 - Qizl1 - Qck1 - Qck2;
-            std::cout << Qw1 << std::endl;
+            // Write to the file
+            
+            //std::cout << Qw1 << std::endl;
             if (Qw1 < 0) {
                 Qw1 = 0;
             }
             Nu1 = diameter * (Qw1) / (T1 - table_in_begin_parametr[k][9]) / (lambda[c] + (lambda[c + 1] - lambda[c]) * d);
+            MyFile << Nu1;
+            MyFile << " ";
             Alpha1 = Qw1 / (T1 - table_in_begin_parametr[k][6]);
 
 
@@ -155,6 +206,7 @@ float countNu(int m, int n,std::string str, int x, int y, int x1, int y1)//пе�
         }
         k++;
     }
+    MyFile.close();
     return Qw1;
     //for (int i = 0;i < 10;i++)
       //  std::cout << arr[i] << std::endl;
